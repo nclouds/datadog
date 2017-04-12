@@ -140,12 +140,12 @@ resource "datadog_monitor" "LOAD_AVERAGE_5MINUTES" {
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
-  query = "avg(last_1m):abs( avg:system.load.5{ ${var.enviroment_tag} } by {host} ) > 0.9"
+  query = "avg(last_1m):abs( avg:system.load.5{ ${var.enviroment_tag} } by {host} ) > 30"
 
   thresholds {
     ok       = 0
-    warning  = 0.7
-    critical = 0.9
+    warning  = 15
+    critical = 30
   }
 
   notify_no_data    = false
@@ -194,12 +194,12 @@ resource "datadog_monitor" "LOAD_AVERAGE_1MINUTES" {
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
-  query = "avg(last_1m):abs( avg:system.load.1{ ${var.enviroment_tag} } by {host} ) > 0.9"
+  query = "avg(last_1m):abs( avg:system.load.1{ ${var.enviroment_tag} } by {host} ) > 30"
 
   thresholds {
     ok       = 0
-    warning  = 0.7
-    critical = 0.9
+    warning  = 15
+    critical = 30
   }
 
   notify_no_data    = false
