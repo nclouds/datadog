@@ -1,5 +1,5 @@
 resource "datadog_monitor" "CPU_USAGE" {
-  name               = "${var.enviroment_tag} CPU iowait"
+  name               = "CPU_USAGE"
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
@@ -26,7 +26,7 @@ resource "datadog_monitor" "CPU_USAGE" {
 }
 
 resource "datadog_monitor" "MEMORY" {
-  name               = "${var.enviroment_tag} MEMORY"
+  name               = "MEMORY"
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
@@ -52,16 +52,16 @@ resource "datadog_monitor" "MEMORY" {
 }
 
 resource "datadog_monitor" "DISK" {
-  name               = "${var.enviroment_tag} DISK"
+  name               = "DISK"
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
-  query = "avg(last_1m):abs( avg:system.disk.used{ ${var.enviroment_tag} } by {host} / avg:system.disk.total{ ${var.enviroment_tag} } by {host} ) > 0.9"
+  query = "avg(last_1m):abs( avg:system.disk.free{ ${var.enviroment_tag} } by {host} * 100 / avg:system.disk.total{ ${var.enviroment_tag} } by {host} ) <= 10"
 
   thresholds {
     ok       = 0
-    warning  = 0.75
-    critical = 0.90
+    warning  = 15
+    critical = 10
   }
 
   notify_no_data    = false
@@ -79,7 +79,7 @@ resource "datadog_monitor" "DISK" {
 }
 
 resource "datadog_monitor" "NTP_OFFSET" {
-  name               = "${var.enviroment_tag} NTP OFFSET"
+  name               = "NTP OFFSET"
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
@@ -107,7 +107,7 @@ resource "datadog_monitor" "NTP_OFFSET" {
 
 
 resource "datadog_monitor" "SWAP_MEMORY" {
-  name               = "${var.enviroment_tag} SWAP MEMORY"
+  name               = "SWAP MEMORY"
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
@@ -136,16 +136,16 @@ resource "datadog_monitor" "SWAP_MEMORY" {
 
 
 resource "datadog_monitor" "LOAD_AVERAGE_5MINUTES" {
-  name               = "${var.enviroment_tag} LOAD_AVERAGE_5MINUTES"
+  name               = "LOAD_AVERAGE_5MINUTES"
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
-  query = "avg(last_1m):abs( avg:system.load.5{ ${var.enviroment_tag} } by {host} ) > 30"
+  query = "avg(last_1m):abs( avg:system.load.norm.5{ ${var.enviroment_tag} } by {host} ) > 4"
 
   thresholds {
     ok       = 0
-    warning  = 15
-    critical = 30
+    warning  = 3
+    critical = 4
   }
 
   notify_no_data    = false
@@ -160,58 +160,4 @@ resource "datadog_monitor" "LOAD_AVERAGE_5MINUTES" {
   }
 
   tags = ["LOAD_AVERAGE_5MINUTES", "${var.enviroment_tag}"]
-}
-
-resource "datadog_monitor" "LOAD_AVERAGE_15MINUTES" {
-  name               = "${var.enviroment_tag} LOAD_AVERAGE_15MINUTES"
-  type               = "metric alert"
-  message            = "Monitor triggered. Notify: ${var.users}"
-
-  query = "avg(last_1m):abs( avg:system.load.15{ ${var.enviroment_tag} } by {host} ) > 0.9"
-
-  thresholds {
-    ok       = 0
-    warning  = 0.7
-    critical = 0.9
-  }
-
-  notify_no_data    = false
-  renotify_interval = 60
-
-  notify_audit = false
-  timeout_h    = 60
-  include_tags = true
-
-  silenced {
-    "*" = 0
-  }
-
-  tags = ["LOAD_AVERAGE_15MINUTES", "${var.enviroment_tag}"]
-}
-
-resource "datadog_monitor" "LOAD_AVERAGE_1MINUTES" {
-  name               = "${var.enviroment_tag} LOAD_AVERAGE_1MINUTES"
-  type               = "metric alert"
-  message            = "Monitor triggered. Notify: ${var.users}"
-
-  query = "avg(last_1m):abs( avg:system.load.1{ ${var.enviroment_tag} } by {host} ) > 30"
-
-  thresholds {
-    ok       = 0
-    warning  = 15
-    critical = 30
-  }
-
-  notify_no_data    = false
-  renotify_interval = 60
-
-  notify_audit = false
-  timeout_h    = 60
-  include_tags = true
-
-  silenced {
-    "*" = 0
-  }
-
-  tags = ["LOAD_AVERAGE_1MINUTES", "${var.enviroment_tag}"]
 }
