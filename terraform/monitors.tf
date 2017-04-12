@@ -1,14 +1,14 @@
-resource "datadog_monitor" "CPU_iowait" {
+resource "datadog_monitor" "CPU_USAGE" {
   name               = "${var.enviroment_tag} CPU iowait"
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
-  query = "avg(last_1m):abs( avg:system.cpu.iowait{ ${var.enviroment_tag} } by {host}  ) == 100"
+  query = "avg(last_1m):abs( 100 - avg:system.cpu.idle{ ${var.enviroment_tag} } by {host}  ) == 100"
 
   thresholds {
     ok       = 0
-    warning  = 70
-    critical = 90
+    warning  = 99
+    critical = 100
   }
 
   notify_no_data    = false
@@ -22,98 +22,15 @@ resource "datadog_monitor" "CPU_iowait" {
     "*" = 0
   }
 
-  tags = ["CPU_IOWAIT", "${var.enviroment_tag}"]
+  tags = ["CPU_USAGE", "${var.enviroment_tag}"]
 }
-
-resource "datadog_monitor" "CPU_stolen" {
-  name               = "${var.enviroment_tag} CPU stolen"
-  type               = "metric alert"
-  message            = "Monitor triggered. Notify: ${var.users}"
-
-  query = "avg(last_1m):abs( avg:system.cpu.stolen{ ${var.enviroment_tag} } by {host}   ) > 90"
-  thresholds {
-    ok       = 0
-    warning  = 70
-    critical = 90
-  }
-
-  notify_no_data    = false
-  renotify_interval = 60
-
-  notify_audit = false
-  timeout_h    = 60
-  include_tags = true
-
-  silenced {
-    "*" = 0
-  }
-
-  tags = ["CPU_stolen", "${var.enviroment_tag}"]
-}
-
-resource "datadog_monitor" "CPU_user" {
-  name               = "${var.enviroment_tag} CPU user"
-  type               = "metric alert"
-  message            = "Monitor triggered. Notify: ${var.users}"
-
-  query = "avg(last_1m):abs( avg:system.cpu.user{ ${var.enviroment_tag} } by {host}    ) > 90"
-
-  thresholds {
-    ok       = 0
-    warning  = 70
-    critical = 90
-  }
-
-  notify_no_data    = false
-  renotify_interval = 60
-
-  notify_audit = false
-  timeout_h    = 60
-  include_tags = true
-
-  silenced {
-    "*" = 0
-  }
-
-  tags = ["CPU_user", "${var.enviroment_tag}"]
-}
-
-resource "datadog_monitor" "CPU_system" {
-  name               = "${var.enviroment_tag} CPU system"
-  type               = "metric alert"
-  message            = "Monitor triggered. Notify: ${var.users}"
-
-  query = "avg(last_1m):abs( avg:system.cpu.system{ ${var.enviroment_tag} } by {host}    ) > 90"
-
-  thresholds {
-    ok       = 0
-    warning  = 70
-    critical = 90
-  }
-
-  notify_no_data    = false
-  renotify_interval = 60
-
-  notify_audit = false
-  timeout_h    = 60
-  include_tags = true
-
-  silenced {
-    "*" = 0
-  }
-
-  tags = ["CPU_system", "${var.enviroment_tag}"]
-}
-
-
-
 
 resource "datadog_monitor" "MEMORY" {
   name               = "${var.enviroment_tag} MEMORY"
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
-  query = "avg(last_1m):abs(avg:system.mem.used{ ${var.enviroment_tag} } by {host} * 100 / avg:system.mem.total{ ${var.enviroment_tag} } by {host}) <= 5"
+  query = "avg(last_1m):abs(avg:system.mem.free{ ${var.enviroment_tag} } by {host} * 100 / avg:system.mem.total{ ${var.enviroment_tag} } by {host}) <= 5"
 
   thresholds {
     ok       = 0
