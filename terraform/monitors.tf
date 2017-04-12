@@ -3,7 +3,7 @@ resource "datadog_monitor" "CPU_iowait" {
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
-  query = "avg(last_1m):abs( avg:system.cpu.iowait{ ${var.enviroment_tag} } by {host}  ) > 90"
+  query = "avg(last_1m):abs( avg:system.cpu.iowait{ ${var.enviroment_tag} } by {host}  ) == 100"
 
   thresholds {
     ok       = 0
@@ -113,12 +113,12 @@ resource "datadog_monitor" "MEMORY" {
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
-  query = "avg(last_1m):abs(avg:system.mem.used{ ${var.enviroment_tag} } by {host} / avg:system.mem.total{ ${var.enviroment_tag} } by {host}) > 0.9"
+  query = "avg(last_1m):abs(avg:system.mem.used{ ${var.enviroment_tag} } by {host} * 100 / avg:system.mem.total{ ${var.enviroment_tag} } by {host}) <= 5"
 
   thresholds {
     ok       = 0
-    warning  = 0.8
-    critical = 0.9
+    warning  = 8
+    critical = 5
   }
 
   notify_no_data    = true
@@ -166,12 +166,12 @@ resource "datadog_monitor" "NTP_OFFSET" {
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
-  query = "avg(last_1m):abs( avg:ntp.offset{ ${var.enviroment_tag} } by {host} ) > 300"
+  query = "avg(last_1m):abs( avg:ntp.offset{ ${var.enviroment_tag} } by {host} ) > 5"
 
   thresholds {
     ok       = 0
-    warning  = 150
-    critical = 300
+    warning  = 3
+    critical = 5
   }
 
   notify_no_data    = false
@@ -194,12 +194,12 @@ resource "datadog_monitor" "SWAP_MEMORY" {
   type               = "metric alert"
   message            = "Monitor triggered. Notify: ${var.users}"
 
-  query = "avg(last_1m):abs( avg:system.swap.used{ ${var.enviroment_tag} } by {host} / avg:system.swap.total{ ${var.enviroment_tag} } by {host} ) > 0.9"
+  query = "avg(last_1m):abs( avg:system.swap.free{ ${var.enviroment_tag} } by {host} * 100 / avg:system.swap.total{ ${var.enviroment_tag} } by {host} ) <= 5"
 
   thresholds {
     ok       = 0
-    warning  = 0.75
-    critical = 0.9
+    warning  = 8
+    critical = 5
   }
 
   notify_no_data    = false
